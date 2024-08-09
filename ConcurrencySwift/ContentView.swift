@@ -8,17 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+    @StateObject private var dataProcessor = DataProcessor()
 
-#Preview {
-    ContentView()
+    var body: some View {
+        NavigationView {
+            List(dataProcessor.tasks) { task in
+                VStack(alignment: .leading) {
+                    Text("Task ID: \(task.id)")
+                        .font(.headline)
+                    Text("Data: \(task.data.map { String($0) }.joined(separator: ", "))")
+                        .font(.subheadline)
+                }
+            }
+            .navigationTitle("Tasks")
+            .refreshable {
+                await dataProcessor.fetchTasks()
+            }
+        }
+    }
 }
